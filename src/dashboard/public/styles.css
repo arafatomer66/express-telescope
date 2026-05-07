@@ -152,6 +152,8 @@ body {
 .badge.query { color: var(--purple); }
 .badge.log { color: var(--accent); }
 .badge.cache { color: var(--green); }
+.badge.http_client { color: var(--yellow); }
+.badge.dump { color: var(--purple); }
 
 .empty { padding: 40px; text-align: center; color: var(--muted); }
 .hidden { display: none !important; }

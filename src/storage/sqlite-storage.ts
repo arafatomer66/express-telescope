@@ -154,6 +154,8 @@ export class SqliteStorage {
       cache: 0,
       mail: 0,
       job: 0,
+      http_client: 0,
+      dump: 0,
     } as Record<EntryType, number> & { total: number };
     for (const r of rows) {
       out[r.type] = r.c;

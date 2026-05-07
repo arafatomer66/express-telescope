@@ -8,6 +8,8 @@ Captures and displays:
 - **Exceptions** — class, message, file/line, full stack trace
 - **Queries** — SQL, bindings, duration, slow-query tagging
 - **Logs** — `console.log/info/warn/error` capture
+- **HTTP Client** — outbound `fetch` and `axios` calls
+- **Dumps** — `dump(t, ...)` for ad-hoc value inspection
 - *(extensible)* cache, mail, jobs
 
 All entries within a single HTTP request are grouped into a **batch** so you can see every query and log line tied to a specific request.
@@ -78,12 +80,43 @@ patchBetterSqlite(t, db as never);
 // every prepare/run/get/all is now recorded
 ```
 
-For Prisma, hook the `query` event:
+**3. Prisma** — one-liner:
 
 ```ts
-prisma.$on('query', (e) => {
-  t.recordQuery({ connection: 'prisma', sql: e.query, bindings: JSON.parse(e.params), duration: e.duration });
+import { PrismaClient } from '@prisma/client';
+import { installPrismaWatcher } from 'express-telescope';
+
+const prisma = new PrismaClient({
+  log: [{ emit: 'event', level: 'query' }],
 });
+installPrismaWatcher(t, prisma);
+```
+
+**4. TypeORM** — pass the logger:
+
+```ts
+import { TelescopeTypeOrmLogger } from 'express-telescope';
+new DataSource({ /* ... */, logger: new TelescopeTypeOrmLogger(t) });
+```
+
+## Outbound HTTP
+
+`installTelescope()` patches global `fetch` by default. To opt out: `captureFetch: false`.
+
+For axios:
+
+```ts
+import axios from 'axios';
+import { attachAxiosInterceptor } from 'express-telescope';
+attachAxiosInterceptor(t, axios);
+```
+
+## Ad-hoc dumps
+
+```ts
+import { dump } from 'express-telescope';
+dump(t, 'current user', user);
+dump(t, { someState });
 ```
 
 ## Auth in production

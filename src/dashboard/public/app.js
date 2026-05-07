@@ -99,6 +99,29 @@
           <span class="time">${fmtTime(e.createdAt)}</span>
         </div>`;
     }
+    if (e.type === 'http_client') {
+      const c = e.content;
+      const statusCls = c.status === 0 ? 's5' : statusClass(c.status);
+      return `
+        <div class="row" data-id="${e.id}">
+          <span class="method ${c.method}">${c.method}</span>
+          <span class="status ${statusCls}">${c.status || 'ERR'}</span>
+          <span class="uri">→ ${escapeHtml(c.uri)}</span>
+          <span class="duration">${fmtDuration(c.duration)}</span>
+          <span class="time">${fmtTime(e.createdAt)}</span>
+        </div>`;
+    }
+    if (e.type === 'dump') {
+      const c = e.content;
+      const preview = (c.label ? c.label + ': ' : '') +
+        c.values.map((v) => typeof v === 'string' ? v : JSON.stringify(v)).join(' ');
+      return `
+        <div class="row" data-id="${e.id}">
+          <span class="badge dump">DUMP</span>
+          <span class="uri" style="grid-column: span 3;">${escapeHtml(preview.slice(0, 200))}</span>
+          <span class="time">${fmtTime(e.createdAt)}</span>
+        </div>`;
+    }
     return `
       <div class="row" data-id="${e.id}">
         <span class="badge ${e.type}">${e.type.toUpperCase()}</span>
@@ -184,6 +207,31 @@
       const c = entry.content;
       sections.push(section('Log', kv({ Level: c.level, Message: c.message })));
       if (c.context) sections.push(section('Context', codeBlock(JSON.stringify(c.context, null, 2))));
+    } else if (entry.type === 'http_client') {
+      const c = entry.content;
+      sections.push(section('Outbound HTTP', kv({
+        Method: c.method,
+        URI: c.uri,
+        Status: c.status === 0 ? 'ERROR' : String(c.status),
+        Duration: fmtDuration(c.duration),
+        Error: c.error || '—',
+      })));
+      if (c.requestHeaders) sections.push(section('Request headers', codeBlock(JSON.stringify(c.requestHeaders, null, 2))));
+      if (c.requestBody !== undefined) sections.push(section('Request body',
+        codeBlock(typeof c.requestBody === 'string' ? c.requestBody : JSON.stringify(c.requestBody, null, 2))));
+      if (c.responseHeaders) sections.push(section('Response headers', codeBlock(JSON.stringify(c.responseHeaders, null, 2))));
+      if (c.responseBody !== undefined) sections.push(section('Response body',
+        codeBlock(typeof c.responseBody === 'string' ? c.responseBody : JSON.stringify(c.responseBody, null, 2))));
+    } else if (entry.type === 'dump') {
+      const c = entry.content;
+      if (c.label) sections.push(section('Label', codeBlock(c.label)));
+      sections.push(section('Values', codeBlock(c.values.map((v) =>
+        typeof v === 'string' ? v : JSON.stringify(v, null, 2)
+      ).join('\n\n'))));
+      if (c.source) sections.push(section('Source', kv({
+        File: c.source.file || '—',
+        Line: c.source.line ?? '—',
+      })));
     } else {
       sections.push(section('Content', codeBlock(JSON.stringify(entry.content, null, 2))));
     }
@@ -209,6 +257,9 @@
     if (e.type === 'exception') return e.content.class + ': ' + e.content.message;
     if (e.type === 'query') return e.content.sql;
     if (e.type === 'log') return '[' + e.content.level + '] ' + e.content.message;
+    if (e.type === 'http_client') return e.content.method + ' → ' + e.content.uri + ' (' + e.content.status + ')';
+    if (e.type === 'dump') return (e.content.label ? e.content.label + ': ' : '') +
+      e.content.values.map((v) => typeof v === 'string' ? v : JSON.stringify(v)).join(' ');
     return JSON.stringify(e.content);
   }
 

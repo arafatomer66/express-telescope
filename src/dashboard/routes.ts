@@ -12,6 +12,8 @@ const VALID_TYPES: EntryType[] = [
   'cache',
   'mail',
   'job',
+  'http_client',
+  'dump',
 ];
 
 export function dashboardRouter(t: Telescope): Router {

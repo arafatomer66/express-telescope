@@ -3,9 +3,11 @@ import path from 'path';
 import { SqliteStorage } from './storage/sqlite-storage';
 import {
   CacheEntry,
+  DumpEntry,
   Entry,
   EntryType,
   ExceptionEntry,
+  HttpClientEntry,
   JobEntry,
   LogEntry,
   MailEntry,
@@ -131,6 +133,20 @@ export class Telescope {
     return this.record('job', content, { tags: [...tags, content.status] });
   }
 
+  recordHttpClient(content: HttpClientEntry, tags: string[] = []) {
+    const t = [...tags, content.method];
+    if (content.status >= 500) t.push('server-error');
+    else if (content.status >= 400) t.push('client-error');
+    return this.record('http_client', content, {
+      tags: t,
+      familyHash: `${content.method} ${stripQuery(content.uri)}`,
+    });
+  }
+
+  recordDump(content: DumpEntry, tags: string[] = []) {
+    return this.record('dump', content, { tags });
+  }
+
   close() {
     this.storage.close();
   }
@@ -148,4 +164,9 @@ export function telescope(opts?: TelescopeOptions): Telescope {
 export function resetTelescope() {
   if (singleton) singleton.close();
   singleton = null;
+}
+
+function stripQuery(uri: string): string {
+  const i = uri.indexOf('?');
+  return i === -1 ? uri : uri.slice(0, i);
 }

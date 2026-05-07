@@ -6,6 +6,7 @@ import {
   attachErrorHandler,
   patchBetterSqlite,
   trackQuery,
+  dump,
 } from '../src';
 
 const app = express();
@@ -31,8 +32,20 @@ app.get('/', (_req, res) => {
   res.json({
     message: 'Hello from express-telescope demo',
     dashboard: '/telescope',
-    try: ['/users', '/users/1', '/slow', '/boom', '/log'],
+    try: ['/users', '/users/1', '/slow', '/boom', '/log', '/fetch', '/dump'],
   });
+});
+
+app.get('/fetch', async (_req, res) => {
+  const r = await fetch('https://api.github.com/repos/nodejs/node');
+  const data = (await r.json()) as { full_name: string; stargazers_count: number };
+  res.json({ name: data.full_name, stars: data.stargazers_count });
+});
+
+app.get('/dump', (_req, res) => {
+  dump(t, 'current user', { id: 1, name: 'Alice' });
+  dump(t, { somethingElse: [1, 2, 3] });
+  res.json({ dumped: 2 });
 });
 
 app.get('/users', (_req, res) => {

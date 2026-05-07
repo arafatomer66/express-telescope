@@ -5,7 +5,9 @@ export type EntryType =
   | 'log'
   | 'cache'
   | 'mail'
-  | 'job';
+  | 'job'
+  | 'http_client'
+  | 'dump';
 
 export interface Entry<T = unknown> {
   id: string;
@@ -71,6 +73,24 @@ export interface MailEntry {
   body?: string;
   cc?: string[];
   bcc?: string[];
+}
+
+export interface HttpClientEntry {
+  method: string;
+  uri: string;
+  status: number;
+  duration: number;
+  requestHeaders?: Record<string, string>;
+  requestBody?: unknown;
+  responseHeaders?: Record<string, string>;
+  responseBody?: unknown;
+  error?: string;
+}
+
+export interface DumpEntry {
+  label?: string;
+  values: unknown[];
+  source?: { file?: string; line?: number };
 }
 
 export interface JobEntry {
