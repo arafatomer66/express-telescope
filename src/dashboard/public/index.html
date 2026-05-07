@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Express Telescope</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">●</span>
+        <strong>Express Telescope</strong>
+      </div>
+      <div class="actions">
+        <label class="auto-refresh">
+          <input type="checkbox" id="autoRefresh" checked />
+          Auto-refresh
+        </label>
+        <button id="refreshBtn" class="btn">Refresh</button>
+        <button id="clearBtn" class="btn danger">Clear</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <nav id="nav">
+          <a href="#all" data-type="all" class="nav-item active">
+            <span>All</span><span class="count" data-count="total">0</span>
+          </a>
+          <a href="#request" data-type="request" class="nav-item">
+            <span>Requests</span><span class="count" data-count="request">0</span>
+          </a>
+          <a href="#exception" data-type="exception" class="nav-item">
+            <span>Exceptions</span><span class="count" data-count="exception">0</span>
+          </a>
+          <a href="#query" data-type="query" class="nav-item">
+            <span>Queries</span><span class="count" data-count="query">0</span>
+          </a>
+          <a href="#log" data-type="log" class="nav-item">
+            <span>Logs</span><span class="count" data-count="log">0</span>
+          </a>
+          <a href="#cache" data-type="cache" class="nav-item">
+            <span>Cache</span><span class="count" data-count="cache">0</span>
+          </a>
+          <a href="#mail" data-type="mail" class="nav-item">
+            <span>Mail</span><span class="count" data-count="mail">0</span>
+          </a>
+          <a href="#job" data-type="job" class="nav-item">
+            <span>Jobs</span><span class="count" data-count="job">0</span>
+          </a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <div id="list" class="list"></div>
+        <div id="empty" class="empty hidden">No entries yet.</div>
+      </main>
+
+      <aside id="detail" class="detail hidden">
+        <div class="detail-header">
+          <h3 id="detailTitle">Entry</h3>
+          <button id="closeDetail" class="btn ghost">×</button>
+        </div>
+        <div id="detailBody" class="detail-body"></div>
+      </aside>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

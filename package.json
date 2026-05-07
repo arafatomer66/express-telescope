@@ -1,0 +1,32 @@
+{
+  "name": "express-telescope",
+  "version": "0.1.0",
+  "description": "A Telescope-like debugging dashboard for Express + TypeScript apps",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && npm run copy:assets",
+    "copy:assets": "mkdir -p dist/dashboard/public && cp -r src/dashboard/public/* dist/dashboard/public/",
+    "dev": "tsc --watch",
+    "example": "ts-node example/server.ts",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["express", "telescope", "debug", "dashboard", "monitoring"],
+  "author": "Omer Arafat",
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "nanoid": "^3.3.7"
+  },
+  "peerDependencies": {
+    "express": "^4.0.0 || ^5.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "express": "^4.21.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.0"
+  }
+}
